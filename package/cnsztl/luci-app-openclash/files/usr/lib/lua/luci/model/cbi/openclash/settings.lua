@@ -4,7 +4,7 @@ local SYS  = require "luci.sys"
 local HTTP = require "luci.http"
 local DISP = require "luci.dispatcher"
 local UTIL = require "luci.util"
-local uci = require("luci.model.uci").cursor()
+local uci = require "luci.model.uci".cursor()
 
 m = Map("openclash", translate("Global Settings(Will Modify The Config File Or Subscribe According To The Settings On This Page)"))
 m.pageaction = false
@@ -85,6 +85,12 @@ o:value("0", translate("Disable"))
 o:value("1", translate("Enable"))
 o.default=0
 
+o = s:taboption("dns", ListValue, "disable_masq_cache", translate("Disable Dnsmasq's DNS Cache"))
+o.description = translate("Recommended Enabled For Avoiding Some Connection Errors")
+o:value("0", translate("Disable"))
+o:value("1", translate("Enable"))
+o.default=0
+
 o = s:taboption("dns", ListValue, "dns_advanced_setting", translate("Advanced Setting"))
 o.description = translate("DNS Advanced Settings")
 o:value("0", translate("Disable"))
@@ -103,8 +109,8 @@ o:depends("dns_advanced_setting", "1")
 o.inputtitle = translate("Check And Update")
 o.inputstyle = "reload"
 o.write = function()
-  uci:set("openclash", "config", "enable", 1)
-  uci:commit("openclash")
+  m.uci:set("openclash", "config", "enable", 1)
+  m.uci:commit("openclash")
   SYS.call("sh /usr/share/openclash/openclash_fake_block.sh && /etc/init.d/openclash restart >/dev/null 2>&1 &")
   HTTP.redirect(DISP.build_url("admin", "services", "openclash"))
 end
@@ -141,10 +147,8 @@ o:value("lhie1", translate("lhie1 Rules"))
 o:value("ConnersHua", translate("ConnersHua Rules"))
 o:value("ConnersHua_return", translate("ConnersHua Return Rules"))
 
-SYS.call("awk '/Proxy Group:/,/Rule:/{print}' /etc/openclash/config.yaml 2>/dev/null |egrep '^ {0,}-' |grep name: |awk -F 'name: ' '{print $2}' |sed 's/,.*//' |sed 's/\"//g' >/tmp/Proxy_Group 2>&1")
-SYS.call("echo 'DIRECT' >>/tmp/Proxy_Group")
-SYS.call("echo 'REJECT' >>/tmp/Proxy_Group")
-file = io.open("/tmp/Proxy_Group", "r"); 
+SYS.call("/usr/share/openclash/yml_groups_name_get.sh 2>/dev/null")
+file = io.open("/tmp/Proxy_Group", "r");
 
 o = s:taboption("rules", ListValue, "GlobalTV", translate("GlobalTV"))
 o:depends("rule_source", "lhie1")
@@ -241,8 +245,8 @@ o.title = translate("Update Subcription")
 o.inputtitle = translate("Check And Update")
 o.inputstyle = "reload"
 o.write = function()
-  uci:set("openclash", "config", "enable", 1)
-  uci:commit("openclash")
+  m.uci:set("openclash", "config", "enable", 1)
+  m.uci:commit("openclash")
   SYS.call("rm -rf /etc/openclash/config.bak 2>/dev/null")
   SYS.call("sh /usr/share/openclash/openclash.sh >/dev/null 2>&1 &")
   HTTP.redirect(DISP.build_url("admin", "services", "openclash"))
@@ -277,8 +281,8 @@ o.inputtitle = translate("Check And Update")
 o.description = translate("Other Rules Update(Only in Use)")
 o.inputstyle = "reload"
 o.write = function()
-  uci:set("openclash", "config", "enable", 1)
-  uci:commit("openclash")
+  m.uci:set("openclash", "config", "enable", 1)
+  m.uci:commit("openclash")
   SYS.call("sh /usr/share/openclash/openclash_rule.sh >/dev/null 2>&1 &")
   HTTP.redirect(DISP.build_url("admin", "services", "openclash"))
 end
@@ -311,8 +315,8 @@ o.title = translate("Update GEOIP Database")
 o.inputtitle = translate("Check And Update")
 o.inputstyle = "reload"
 o.write = function()
-  uci:set("openclash", "config", "enable", 1)
-  uci:commit("openclash")
+  m.uci:set("openclash", "config", "enable", 1)
+  m.uci:commit("openclash")
   SYS.call("sh /usr/share/openclash/openclash_ipdb.sh >/dev/null 2>&1 &")
   HTTP.redirect(DISP.build_url("admin", "services", "openclash"))
 end
@@ -456,15 +460,15 @@ o = a:option(Button, "Commit")
 o.inputtitle = translate("Commit Configurations")
 o.inputstyle = "apply"
 o.write = function()
-  uci:commit("openclash")
+  m.uci:commit("openclash")
 end
 
 o = a:option(Button, "Apply")
 o.inputtitle = translate("Apply Configurations")
 o.inputstyle = "apply"
 o.write = function()
-  uci:set("openclash", "config", "enable", 1)
-  uci:commit("openclash")
+  m.uci:set("openclash", "config", "enable", 1)
+  m.uci:commit("openclash")
   SYS.call("/etc/init.d/openclash restart >/dev/null 2>&1 &")
   HTTP.redirect(DISP.build_url("admin", "services", "openclash"))
 end

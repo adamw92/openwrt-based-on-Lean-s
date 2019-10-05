@@ -57,14 +57,16 @@ yml_groups_set()
       return
    fi
    
+   echo "正在写入【$type】-【$name】策略组到配置文件..." >$START_LOG
+   
    echo "- name: $name" >>$GROUP_FILE
    echo "  type: $type" >>$GROUP_FILE
    echo "  proxies:" >>$GROUP_FILE
    
    #名字变化时处理规则部分
    if [ "$name" != "$old_name" ]; then
-      sed -i "s/,${old_name}$/,${name}#d/g" $CONFIG_FILE 2>/dev/null
-      sed -i "s/:${old_name}$/:${name}#d/g" $CONFIG_FILE 2>/dev/null
+      sed -i "s/,${old_name}/,${name}#d/g" $CONFIG_FILE 2>/dev/null
+      sed -i "s/:${old_name}$/:${name}#d/g" $CONFIG_FILE 2>/dev/null #修改自定义规则分组对应标签
       sed -i "s/\'${old_name}\'/\'${name}\'/g" $CFG_FILE 2>/dev/null
       config_load "openclash"
    fi
@@ -82,20 +84,19 @@ yml_groups_set()
 
 create_config=$(uci get openclash.config.create_config 2>/dev/null)
 if [ "$create_config" = "0" ]; then
-
-   if [ -z "$(grep "^ \{0,\}Proxy:" /etc/openclash/config.yaml)" ] || [ -z "$(grep "^ \{0,\}Proxy Group:" /etc/openclash/config.yaml)" ]; then
-      echo "未找到配置文件，开始使用ConnersHua规则创建..." >$START_LOG
-      uci set openclash.config.create_config=1
-      uci set openclash.config.rule_sources="ConnersHua"
-      uci set openclash.config.rule_source="ConnersHua"
-      uci commit openclash
+   /usr/share/openclash/yml_groups_name_get.sh
+   if [ -z "$(grep "^ \{0,\}Proxy:" /etc/openclash/config.yaml)" ] || [ -z "$(grep "^ \{0,\}Rule:" /etc/openclash/config.yaml)" ]; then
+      echo "配置文件信息读取失败，无法进行修改，请选择一键创建配置文件..." >$START_LOG
+      sleep 5
+      echo "" >$START_LOG
+      exit 0
    else
       echo "开始更新配置文件策略组信息..." >$START_LOG
       config_load "openclash"
       config_foreach yml_groups_set "groups"
-      sed -i "s/#d$//g" $CONFIG_FILE 2>/dev/null
+      sed -i "s/#d//g" $CONFIG_FILE 2>/dev/null
       echo "Rule:" >>$GROUP_FILE
+      echo "配置文件策略组更新完成！" >$START_LOG
    fi
-
 fi
-echo "配置文件策略组创建完成！" >$START_LOG
+/usr/share/openclash/yml_proxys_set.sh >/dev/null 2>&1

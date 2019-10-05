@@ -13,7 +13,7 @@ At least 25G HDD<br/>
 
 ## Install the necessary packages 
 ```bash
-sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint ccache
+sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint ccache curl wget vim nano python python3 python-pip python3-pip haveged lrzsz
 ```
 
 ## Clone the source
@@ -52,7 +52,8 @@ v2ray-plugin source: [honwen/openwrt-v2ray-plugin](https://github.com/honwen/ope
 Package zxlhhyccc: [zxlhhyccc/MY-lede](https://github.com/zxlhhyccc/MY-lede).<br/>
 luci-theme-argonv3 source: [jerrykuku/luci-theme-argon](https://github.com/jerrykuku/luci-theme-argon).<br/>
 luci-theme-darkmatter source: [apollo-ng/luci-theme-darkmatter](https://github.com/apollo-ng/luci-theme-darkmatter).<br/>
-luci-app-koolproxyR source: [tzxiaozhen88/koolproxyR](https://github.com/tzxiaozhen88/koolproxyR).
+luci-app-koolproxyR source: [tzxiaozhen88/koolproxyR](https://github.com/tzxiaozhen88/koolproxyR).<br/>
+openwrt-chinadns-ng source: [pexcn/openwrt-chinadns-ng](https://github.com/pexcn/openwrt-chinadns-ng).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
