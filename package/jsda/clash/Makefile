@@ -1,14 +1,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=clash
-PKG_VERSION:=0.15.5
+PKG_VERSION:=0.16.0
 PKG_MAINTAINER:=frainzy1477
 
 ifeq ($(ARCH),mipsel)
-	PKG_ARCH:=mipsle
+	PKG_ARCH:=mipsle-softfloat
 endif
 ifeq ($(ARCH),mips)
-	PKG_ARCH:=mips
+	PKG_ARCH:=mips-softfloat
 endif
 ifeq ($(ARCH),i386)
 	PKG_ARCH:=386
@@ -17,11 +17,8 @@ ifeq ($(ARCH),x86_64)
 	PKG_ARCH:=amd64
 endif
 ifeq ($(ARCH),arm)
-	PKG_ARCH:=armv6
+	PKG_ARCH:=armv7
 	ifneq ($(BOARD),bcm53xx)
-		PKG_ARCH:=armv7
-	endif
-	ifeq ($(BOARD),kirkwood)
 		PKG_ARCH:=armv5
 	endif
 endif

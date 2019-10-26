@@ -2,10 +2,6 @@
 # Created By [CTCGFW]Project OpenWRT
 # https://github.com/project-openwrt
 
-function check_if_enable(){
-	[ "$(uci get unblockneteasemusic.@unblockneteasemusic[0].enabled)" -eq "0" ] && exit 2
-}
-
 function check_if_already_running(){
 	running_tasks="$(ps |grep "unblockneteasemusic" |grep "update_core" |grep -v "grep" |awk '{print $1}' |wc -l)"
 	[ "${running_tasks}" -gt "2" ] && echo -e "\nA task is already running." >>/tmp/unblockneteasemusic.log && exit 2
@@ -50,6 +46,7 @@ function update_core(){
 		echo -e "Failed to download core." >>/tmp/unblockneteasemusic.log
 		exit 1
 	else
+		[ "${luci_update}" == "y" ] && touch "/usr/share/unblockneteasemusic/update_successfully"
 		echo -e "${latest_ver}" > /usr/share/unblockneteasemusic/local_ver
 		/etc/init.d/unblockneteasemusic restart
 	fi
@@ -59,9 +56,9 @@ function update_core(){
 }
 
 function main(){
-	check_if_enable
 	check_if_already_running
 	check_latest_version
 }
 
-main
+	[ "$1" == "luci_update" ] && luci_update="y"
+	main
